@@ -12,9 +12,9 @@ using System.Windows.Forms;
 
 namespace Java_MC_Shape_To_VS_Shape
 {
-    public partial class Form1 : Form
+    public partial class MCShapeToVSShape : Form
     {
-        public Form1()
+        public MCShapeToVSShape()
         {
             InitializeComponent();
         }

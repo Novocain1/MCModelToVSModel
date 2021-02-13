@@ -10,6 +10,47 @@ using System.Windows.Forms;
 
 namespace Java_MC_Shape_To_VS_Shape
 {
+    public class VSShapeConverter : JsonConverter
+    {
+        JsonSerializerSettings conversionSettings = new JsonSerializerSettings()
+        {
+            Formatting = Formatting.None,
+            Culture = CultureInfo.InvariantCulture,
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
+        static readonly Type[] Forbidden = new Type[]
+        {
+            typeof(VSModelJSON),
+            typeof(VSElementNode),
+            typeof(VSElementNode[]),
+            typeof(CommonFaces),
+            typeof(string)
+        };
+
+        public override bool CanConvert(Type objectType)
+        {
+            bool canConvert = true;
+
+            foreach (var val in Forbidden)
+            {
+                canConvert ^= objectType == val;
+            }
+
+            return canConvert;
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            writer.WriteRawValue(JsonConvert.SerializeObject(value, conversionSettings));
+        }
+    }
+
     static class Program
     {
         /// <summary>
@@ -20,7 +61,7 @@ namespace Java_MC_Shape_To_VS_Shape
 
         public static VSModelJSON convertedVSModel;
 
-        static readonly JsonSerializerSettings conversionSettings = new JsonSerializerSettings()
+        static JsonSerializerSettings conversionSettings = new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,
             Culture = CultureInfo.InvariantCulture,
@@ -30,9 +71,11 @@ namespace Java_MC_Shape_To_VS_Shape
         [STAThread]
         static void Main()
         {
+            conversionSettings.Converters.Add(new VSShapeConverter());
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new MCShapeToVSShape());
         }
 
 
