@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -25,7 +26,10 @@ namespace Java_MC_Shape_To_VS_Shape
             typeof(VSElementNode),
             typeof(VSElementNode[]),
             typeof(CommonFaces),
-            typeof(string)
+            typeof(VSMCEditorSettings),
+            typeof(Dictionary<string, string>),
+            typeof(string),
+            typeof(bool)
         };
 
         public override bool CanConvert(Type objectType)
@@ -47,7 +51,8 @@ namespace Java_MC_Shape_To_VS_Shape
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteRawValue(JsonConvert.SerializeObject(value, conversionSettings));
+            string serialized = JsonConvert.SerializeObject(value, conversionSettings);
+            writer.WriteRawValue(serialized);
         }
     }
 
@@ -85,7 +90,17 @@ namespace Java_MC_Shape_To_VS_Shape
             {
                 using (TextWriter tw = new StreamWriter(path))
                 {
-                    tw.Write(JsonConvert.SerializeObject(convertedVSModel, conversionSettings));
+                    var serialized = JsonConvert.SerializeObject(convertedVSModel, conversionSettings);
+                    serialized = serialized.Replace("  ", "\t");
+                    var matches = Regex.Matches(serialized, @"[,:][^ \t\r\n]");
+
+                    for (int i = 0; i < matches.Count; i++)
+                    {
+                        Match match = matches[i];
+                        serialized = serialized.Insert(i + match.Index + 1, @" ");
+                    }
+
+                    tw.Write(serialized);
                     tw.Close();
                 }
             }
@@ -111,12 +126,14 @@ namespace Java_MC_Shape_To_VS_Shape
                         
                         RotationX = mcRotation.Axis == EnumMCAxis.x ? mcRotation.Angle : 0,
                         RotationY = mcRotation.Axis == EnumMCAxis.y ? mcRotation.Angle : 0,
-                        RotationZ = mcRotation.Axis == EnumMCAxis.z ? mcRotation.Angle : 0
+                        RotationZ = mcRotation.Axis == EnumMCAxis.z ? mcRotation.Angle : 0,
                     };
                 }
 
                 convertedVSModel = new VSModelJSON()
                 {
+                    TextureWidth = loadedMCModel.Texture_Size[0],
+                    TextureHeight = loadedMCModel.Texture_Size[1],
                     Textures = loadedMCModel.Textures,
                     Elements = convertedNodes
                 };
@@ -129,33 +146,45 @@ namespace Java_MC_Shape_To_VS_Shape
     {
         [JsonProperty]
         public McElementNode[] Elements { get; set; }
+
+        [JsonProperty]
+        public int[] Texture_Size { get; set; } = new int[] { 16, 16 };
     }
 
     public class VSModelJSON : CommonModelJson
     {
-        [JsonProperty]
+        [JsonProperty(Order = 0)]
+        public VSMCEditorSettings Editor { get; set; } = new VSMCEditorSettings();
+        
+        [JsonProperty(Order = 1)]
+        public int TextureWidth { get; set; } = 16;
+
+        [JsonProperty(Order = 2)]
+        public int TextureHeight { get; set; } = 16;
+        
+        [JsonProperty(Order = 5)]
         public VSElementNode[] Elements { get; set; }
     }
 
 
     public class CommonModelJson
     {
-        [JsonProperty]
+        [JsonProperty(Order = 4)]
         public Dictionary<string, string> Textures { get; set; }
     }
 
     public class CommonElementNode
     {
-        [JsonProperty]
+        [JsonProperty(Order = 0)]
         public string Name { get; set; }
 
-        [JsonProperty]
+        [JsonProperty(Order = 1)]
         public double[] From { get; set; }
 
-        [JsonProperty]
+        [JsonProperty(Order = 2)]
         public double[] To { get; set; }
 
-        [JsonProperty]
+        [JsonProperty(Order = 9999)]
         public CommonFaces Faces { get; set; }
     }
 
@@ -165,18 +194,27 @@ namespace Java_MC_Shape_To_VS_Shape
         public McRotation Rotation { get; set; }
     }
 
+    public class VSMCEditorSettings
+    {
+        [JsonProperty(Order = 0)]
+        public bool AllAngles { get; set; } = true;
+
+        [JsonProperty(Order = 1)]
+        public bool EntityTextureMode { get; set; } = false;
+    }
+
     public class VSElementNode : CommonElementNode
     {
-        [JsonProperty]
+        [JsonProperty(Order = 3)]
         public double[] RotationOrigin { get; set; }
 
-        [JsonProperty]
+        [JsonProperty(Order = 4)]
         public double RotationX { get; set; }
 
-        [JsonProperty]
+        [JsonProperty(Order = 5)]
         public double RotationY { get; set; }
 
-        [JsonProperty]
+        [JsonProperty(Order = 6)]
         public double RotationZ { get; set; }
     }
 
