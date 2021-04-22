@@ -106,7 +106,7 @@ namespace Java_MC_Shape_To_VS_Shape
             }
         }
 
-        public static void Convert()
+        public static void ConvertMCToVS()
         {
             if (loadedMCModel != null)
             {
@@ -123,7 +123,7 @@ namespace Java_MC_Shape_To_VS_Shape
                         Name = loadedMCModel.Elements[i].Name,
                         To = loadedMCModel.Elements[i].To,
                         RotationOrigin = loadedMCModel.Elements[i].Rotation.Origin,
-                        
+
                         RotationX = mcRotation.Axis == EnumMCAxis.x ? mcRotation.Angle : 0,
                         RotationY = mcRotation.Axis == EnumMCAxis.y ? mcRotation.Angle : 0,
                         RotationZ = mcRotation.Axis == EnumMCAxis.z ? mcRotation.Angle : 0,
@@ -139,7 +139,7 @@ namespace Java_MC_Shape_To_VS_Shape
                 };
             }
         }
-        
+
     }
 
     public class MCModelJSON : CommonModelJson
@@ -155,22 +155,95 @@ namespace Java_MC_Shape_To_VS_Shape
     {
         [JsonProperty(Order = 0)]
         public VSMCEditorSettings Editor { get; set; } = new VSMCEditorSettings();
-        
+
         [JsonProperty(Order = 1)]
         public int TextureWidth { get; set; } = 16;
 
         [JsonProperty(Order = 2)]
         public int TextureHeight { get; set; } = 16;
-        
+
         [JsonProperty(Order = 5)]
         public VSElementNode[] Elements { get; set; }
     }
 
-
-    public class CommonModelJson
+    public class BlockBenchModelJson
     {
         [JsonProperty(Order = 4)]
-        public Dictionary<string, string> Textures { get; set; }
+        public BlockBenchModelJson Resolution { get; set; } = new BlockBenchModelJson();
+
+        [JsonProperty(Order = 5)]
+        public BlockBenchModelNode[] Elements { get; set; }
+    }
+
+    public class BlockBenchResolution
+    {
+        [JsonProperty(Order = 0)]
+        public int Width { get; set; } = 16;
+
+        [JsonProperty(Order = 1)]
+        public int Height { get; set; } = 16;
+    }
+
+    public abstract class CommonModelJson
+    {
+        [JsonProperty(Order = 4)]
+        public virtual Dictionary<string, string> Textures { get; set; }
+    }
+
+    public class BlockBenchOutLinerNode
+    {
+        [JsonProperty(Order = 0)]
+        public string Name { get; set; }
+
+        [JsonProperty(Order = 1)]
+        public double[] Origin { get; set; } = new double[] { 0, 0, 0 };
+
+        [JsonProperty(Order = 2)]
+        public string Uuid { get; set; }
+
+        [JsonProperty(Order = 3)]
+        public bool Export { get; set; } = true;
+
+        [JsonProperty(Order = 4)]
+        public bool IsOpen { get; set; } = true;
+
+        [JsonProperty(Order = 5)]
+        public bool Locked { get; set; } = false;
+
+        [JsonProperty(Order = 6)]
+        public bool Visibility { get; set; } = true;
+
+        [JsonProperty(Order = 7)]
+        public int AutoUV { get; set; } = 0;
+
+        [JsonProperty(Order = 9999)]
+        public BlockBenchOutLinerNode[] Children { get; set; }
+    }
+
+    public class BlockBenchModelNode : CommonElementNode
+    {
+        [JsonProperty(Order = 3)]
+        public bool Rescale { get; set; } = false;
+
+        [JsonProperty(Order = 4)]
+        public int AutoUV { get; set; } = 1;
+
+        [JsonProperty(Order = 5)]
+        public EnumBBMarkerColor Color { get; set; } = EnumBBMarkerColor.LightBlue;
+
+        [JsonProperty(Order = 6)]
+        public bool Locked { get; set; } = false;
+
+        [JsonProperty(Order = 7)]
+        public double[] Rotation { get; set; }
+
+        [JsonProperty(Order = 9999)]
+        public string Uuid { get; set; }
+    }
+
+    public enum EnumBBMarkerColor
+    {
+        LightBlue, Yellow, Orange, Red, Purple, Blue, Green, Lime
     }
 
     public class CommonElementNode
@@ -184,7 +257,7 @@ namespace Java_MC_Shape_To_VS_Shape
         [JsonProperty(Order = 2)]
         public double[] To { get; set; }
 
-        [JsonProperty(Order = 9999)]
+        [JsonProperty(Order = 9998)]
         public CommonFaces Faces { get; set; }
     }
 
@@ -216,6 +289,9 @@ namespace Java_MC_Shape_To_VS_Shape
 
         [JsonProperty(Order = 6)]
         public double RotationZ { get; set; }
+
+        [JsonProperty(Order = 9999)]
+        public VSElementNode[] Children { get; set; }
     }
 
     public class McRotation
@@ -235,19 +311,19 @@ namespace Java_MC_Shape_To_VS_Shape
     {
         [JsonProperty]
         public CommonFace North { get; set; }
-        
+
         [JsonProperty]
         public CommonFace East { get; set; }
-        
+
         [JsonProperty]
         public CommonFace South { get; set; }
-        
+
         [JsonProperty]
         public CommonFace West { get; set; }
-        
+
         [JsonProperty]
         public CommonFace Up { get; set; }
-        
+
         [JsonProperty]
         public CommonFace Down { get; set; }
     }

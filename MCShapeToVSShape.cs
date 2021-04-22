@@ -44,7 +44,7 @@ namespace Java_MC_Shape_To_VS_Shape
                 tr.Close();
             }
 
-            Program.Convert();
+            Program.ConvertMCToVS();
         }
 
         private void button1_Click(object sender, EventArgs e)
