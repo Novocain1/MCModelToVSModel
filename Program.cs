@@ -4,23 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Java_MC_Shape_To_VS_Shape
 {
     public class VSShapeConverter : JsonConverter
     {
-        JsonSerializerSettings conversionSettings = new JsonSerializerSettings()
+        private JsonSerializerSettings conversionSettings = new JsonSerializerSettings()
         {
             Formatting = Formatting.None,
             Culture = CultureInfo.InvariantCulture,
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
-        static readonly Type[] Forbidden = new Type[]
+        private static readonly Type[] Forbidden = new Type[]
         {
             typeof(VSModelJSON),
             typeof(VSElementNode),
@@ -56,7 +54,7 @@ namespace Java_MC_Shape_To_VS_Shape
         }
     }
 
-    static class Program
+    internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.
@@ -66,7 +64,7 @@ namespace Java_MC_Shape_To_VS_Shape
 
         public static VSModelJSON convertedVSModel;
 
-        static JsonSerializerSettings conversionSettings = new JsonSerializerSettings()
+        private static JsonSerializerSettings conversionSettings = new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,
             Culture = CultureInfo.InvariantCulture,
@@ -74,7 +72,7 @@ namespace Java_MC_Shape_To_VS_Shape
         };
 
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             conversionSettings.Converters.Add(new VSShapeConverter());
 
@@ -82,7 +80,6 @@ namespace Java_MC_Shape_To_VS_Shape
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MCShapeToVSShape());
         }
-
 
         public static void Save(string path)
         {
@@ -139,7 +136,6 @@ namespace Java_MC_Shape_To_VS_Shape
                 };
             }
         }
-
     }
 
     public class MCModelJSON : CommonModelJson
@@ -296,7 +292,6 @@ namespace Java_MC_Shape_To_VS_Shape
 
     public class McRotation
     {
-
         [JsonProperty]
         public double Angle { get; set; }
 
@@ -330,7 +325,6 @@ namespace Java_MC_Shape_To_VS_Shape
 
     public class CommonFace
     {
-
         [JsonProperty]
         public double[] UV { get; set; }
 

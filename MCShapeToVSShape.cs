@@ -1,13 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Java_MC_Shape_To_VS_Shape
@@ -23,7 +17,7 @@ namespace Java_MC_Shape_To_VS_Shape
         {
             var fD = (sender as OpenFileDialog);
             if (fD.FileName == null) return;
-            
+
             using (TextReader tr = new StreamReader(fD.FileName))
             {
                 string data = tr.ReadToEnd();
@@ -59,12 +53,10 @@ namespace Java_MC_Shape_To_VS_Shape
 
         private void button3_Click(object sender, EventArgs e)
         {
-
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
@@ -77,17 +69,14 @@ namespace Java_MC_Shape_To_VS_Shape
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         private void label1_Click(object sender, EventArgs e)
         {
-
         }
     }
 }
