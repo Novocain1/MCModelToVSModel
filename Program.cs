@@ -224,6 +224,8 @@ namespace Java_MC_Shape_To_VS_Shape
         [JsonProperty(Order = 9999)]
         public JToken[] Children { get; set; }
 
+        public int ChildCount { get => Children.Length / 2; }
+
         public BlockBenchOutLinerNode GetChildAtIndex(int i)
         {
             return Children[i + 1].ToObject<BlockBenchOutLinerNode>();
