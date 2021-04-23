@@ -38,6 +38,7 @@ namespace Java_MC_Shape_To_VS_Shape
                 catch (Exception ex)
                 {
                     textBox1.Text = "Invalid File!";
+                    Console.WriteLine(ex.Message);
                     Program.loadedMCModel = null;
                     this.button2.Enabled = false;
                 }
