@@ -23,12 +23,19 @@ namespace Java_MC_Shape_To_VS_Shape
                 string data = tr.ReadToEnd();
                 try
                 {
-                    Program.loadedMCModel = JsonConvert.DeserializeObject<MCModelJSON>(data);
+                    if (fD.SafeFileName.EndsWith(".bbmodel"))
+                    {
+                        Program.loadedBBModel = JsonConvert.DeserializeObject<BBModelJson>(data);
+                    }
+                    else
+                    {
+                        Program.loadedMCModel = JsonConvert.DeserializeObject<MCModelJSON>(data);
+                    }
                     textBox1.Text = fD.FileName;
                     this.button2.Enabled = true;
                     this.saveFileDialog1.FileName = fD.FileName;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     textBox1.Text = "Invalid File!";
                     Program.loadedMCModel = null;

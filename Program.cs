@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,8 @@ namespace Java_MC_Shape_To_VS_Shape
         /// </summary>
 
         public static MCModelJSON loadedMCModel;
+
+        public static BBModelJson loadedBBModel;
 
         public static VSModelJSON convertedVSModel;
 
@@ -162,13 +165,19 @@ namespace Java_MC_Shape_To_VS_Shape
         public VSElementNode[] Elements { get; set; }
     }
 
-    public class BlockBenchModelJson
+    public class BBModelJson
     {
         [JsonProperty(Order = 4)]
-        public BlockBenchModelJson Resolution { get; set; } = new BlockBenchModelJson();
+        public BlockBenchResolution Resolution { get; set; } = new BlockBenchResolution();
 
         [JsonProperty(Order = 5)]
         public BlockBenchModelNode[] Elements { get; set; }
+
+        [JsonProperty(Order = 6)]
+        public BlockBenchOutLinerNode[] Outliner { get; set; }
+
+        [JsonProperty(Order = 7)]
+        public BlockBenchAnimationNode[] Animations { get; set; }
     }
 
     public class BlockBenchResolution
@@ -213,7 +222,17 @@ namespace Java_MC_Shape_To_VS_Shape
         public int AutoUV { get; set; } = 0;
 
         [JsonProperty(Order = 9999)]
-        public BlockBenchOutLinerNode[] Children { get; set; }
+        public JToken[] Children { get; set; }
+
+        public BlockBenchOutLinerNode GetChildAtIndex(int i)
+        {
+            return Children[i + 1].ToObject<BlockBenchOutLinerNode>();
+        }
+
+        public string GetChildUiidAtIndex(int i)
+        {
+            return Children[i].ToObject<string>();
+        }
     }
 
     public class BlockBenchModelNode : CommonElementNode
@@ -237,9 +256,101 @@ namespace Java_MC_Shape_To_VS_Shape
         public string Uuid { get; set; }
     }
 
+    public class BlockBenchAnimationNode
+    {
+        [JsonProperty(Order = 0)]
+        public string Uuid { get; set; }
+
+        [JsonProperty(Order = 1)]
+        public string Name { get; set; }
+
+        [JsonProperty(Order = 2)]
+        public EnumBBLoopMode Loop { get; set; }
+
+        [JsonProperty(Order = 3)]
+        public bool Override { get; set; }
+
+        [JsonProperty(Order = 4)]
+        public string Anim_Time_Update { get; set; } = "";
+
+        [JsonProperty(Order = 5)]
+        public string Blend_Weight{ get; set; } = "";
+
+        [JsonProperty(Order = 6)]
+        public int Length { get; set; } = 2;
+
+        [JsonProperty(Order = 7)]
+        public int Snapping { get; set; } = 24;
+
+        [JsonProperty(Order = 8)]
+        public bool Selected { get; set; } = false;
+
+        [JsonProperty(Order = 9)]
+        public Dictionary<string, BlockBenchAnimator> Animators { get; set; } = new Dictionary<string, BlockBenchAnimator>();
+    }
+
+
+    public class BlockBenchAnimator
+    {
+        [JsonProperty(Order = 0)]
+        public string Name { get; set; }
+
+        [JsonProperty(Order = 1)]
+        public BlockBenchKeyFrame[] KeyFrames { get; set; }
+    }
+
+    public class BlockBenchKeyFrame
+    {
+        [JsonProperty(Order = 0)]
+        public EnumBBKeyFrameChannel Channel { get; set; }
+
+        [JsonProperty(Order = 1)]
+        public BlockBenchDataPoint[] Data_Points { get; set; }
+
+        [JsonProperty(Order = 2)]
+        public string Uuid { get; set; }
+
+        [JsonProperty(Order = 3)]
+        public int Time { get; set; } = 0;
+
+        [JsonProperty(Order = 4)]
+        public EnumBBMarkerColor Color { get; set; } = EnumBBMarkerColor.None;
+
+        [JsonProperty(Order = 5)]
+        public EnumBBInterpolationMode Interpolation { get; set; } = EnumBBInterpolationMode.Linear;
+    }
+
+    public class BlockBenchDataPoint
+    {
+        [JsonProperty(Order = 0)]
+        public double X { get; set; }
+
+        [JsonProperty(Order = 1)]
+        public double Y { get; set; }
+
+        [JsonProperty(Order = 2)]
+        public double Z { get; set; }
+    }
+
+    public enum EnumBBKeyFrameChannel
+    {
+        Rotation, Position, Scale
+    }
+
+    public enum EnumBBInterpolationMode
+    {
+        Linear, Smooth
+    }
+
     public enum EnumBBMarkerColor
     {
-        LightBlue, Yellow, Orange, Red, Purple, Blue, Green, Lime
+        LightBlue, Yellow, Orange, Red, Purple, Blue, Green, Lime,
+        None = -1
+    }
+
+    public enum EnumBBLoopMode
+    {
+        Once, Hold, Loop
     }
 
     public class CommonElementNode
